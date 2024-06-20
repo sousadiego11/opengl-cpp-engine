@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Keyboard.h"
 
 GLFWwindow* Window::window = nullptr;
 
@@ -17,10 +18,14 @@ int Window::Create() {
     
     while(!glfwWindowShouldClose(Window::window)) {
         glfwSwapBuffers(Window::window);
-        glfwPollEvents();    
+        glfwPollEvents();
+        Keyboard::ListenQuit();
     }
 
     glfwTerminate();
-
     return 0;
+}
+
+void Window::Close() {
+    glfwSetWindowShouldClose(Window::window, true);
 }

@@ -6,7 +6,15 @@ LIB_DIR=lib
 SRC_DIR=src
 
 # Arquivos fonte
-SOURCES="$SRC_DIR/glad.c $SRC_DIR/main.cpp $SRC_DIR/facades/Window.cpp $SRC_DIR/facades/GLAD.cpp $SRC_DIR/facades/GLFW.cpp $SRC_DIR/facades/GL.cpp"
+SOURCES="
+    $SRC_DIR/glad.c 
+    $SRC_DIR/main.cpp 
+    $SRC_DIR/facades/Window.cpp 
+    $SRC_DIR/facades/GLAD.cpp 
+    $SRC_DIR/facades/GLFW.cpp 
+    $SRC_DIR/facades/GL.cpp 
+    $SRC_DIR/facades/Keyboard.cpp
+"
 
 # Arquivo de saída
 OUTPUT=opengl

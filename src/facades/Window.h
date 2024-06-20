@@ -9,4 +9,5 @@ public:
     static GLFWwindow* window;
 
     static int Create();
+    static void Close();
 };
