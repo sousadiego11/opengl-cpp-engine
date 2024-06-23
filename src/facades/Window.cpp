@@ -3,7 +3,7 @@
 
 GLFWwindow* Window::window = nullptr;
 
-int Window::Create() {
+int Window::MakeContext() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -15,14 +15,6 @@ int Window::Create() {
         return -1;
     }
     glfwMakeContextCurrent(Window::window);
-    
-    while(!glfwWindowShouldClose(Window::window)) {
-        glfwSwapBuffers(Window::window);
-        glfwPollEvents();
-        Keyboard::ListenQuit();
-    }
-
-    glfwTerminate();
     return 0;
 }
 

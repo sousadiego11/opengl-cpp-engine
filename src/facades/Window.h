@@ -8,6 +8,6 @@ public:
     static const int height = 600;
     static GLFWwindow* window;
 
-    static int Create();
+    static int MakeContext();
     static void Close();
 };
