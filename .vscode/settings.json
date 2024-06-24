@@ -47,6 +47,8 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "keyboardh": "c"
+        "keyboardh": "c",
+        "fstream": "cpp",
+        "sstream": "cpp"
     }
 }
