@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Keyboard.h"
 #include <string.h>
+#include <math.h>
 
 void Renderer::Render() {
     while(!glfwWindowShouldClose(Window::window)) {
@@ -40,6 +41,12 @@ void Renderer::BoringTriangle() {
     int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
     int shaderProgram = Renderer::LinkProgram(vertexShader, fragmentShader);
 
+    float time = glfwGetTime();
+    float green = sin(time) / 2.0f + 0.5f;
+    int uniformLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
+    glUseProgram(shaderProgram);
+    glUniform4f(uniformLocation, 0.0f, green, 0.0f, 1.0f); // UPDATING UNIFORM REQUIRES USEPROGRAM TO BE USED BEFORE
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
@@ -61,7 +68,6 @@ int Renderer::LinkProgram(int vtx, int frg) {
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
-    glUseProgram(shaderProgram);
     return shaderProgram;
 }
 
