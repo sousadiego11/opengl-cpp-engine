@@ -28,9 +28,9 @@ void Renderer::BoringTriangle() {
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO); //BINDS THE MEMORY MANAGEMENT TO A ARRAY BUFFER
+    
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //COPIES THE BUFFER DATA FROM VERTICES TO THE CORRESPONDING ARRAY BUFFER ON VBO
     
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -42,10 +42,9 @@ void Renderer::BoringTriangle() {
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    glDeleteProgram(shaderProgram);
 
     // DRAW
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
@@ -63,6 +62,7 @@ int Renderer::LinkProgram(int vtx, int frg) {
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
+    glUseProgram(shaderProgram);
     return shaderProgram;
 }
 
