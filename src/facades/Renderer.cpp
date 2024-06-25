@@ -50,10 +50,10 @@ void Renderer::BoringTriangle() {
     int shaderProgram = Renderer::ShaderProgram(vertexShader, fragmentShader);
     
     // CREATES A UNIFORM WICH IS A GLOBAL VALUE TO BE USED ALONG ALL GL PIPELINES
-    // float time = glfwGetTime();
-    // float green = sin(time) / 2.0f + 0.5f;
-    // int uniformLocation = glGetUniformLocation(shaderProgram, "ourColorUniform");
-    // glUniform4f(uniformLocation, 0.0f, green, 0.0f, 1.0f); // UPDATING UNIFORM REQUIRES USEPROGRAM TO BE USED BEFORE
+    float time = glfwGetTime();
+    float sinWave = sin(time);
+    int uniformLocation = glGetUniformLocation(shaderProgram, "sinWave");
+    glUniform1f(uniformLocation, sinWave); // UPDATING UNIFORM REQUIRES USEPROGRAM TO BE USED BEFORE
 
     // DRAW
     glDrawArrays(GL_TRIANGLES, 0, 3);
