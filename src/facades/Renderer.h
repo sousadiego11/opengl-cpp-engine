@@ -11,7 +11,6 @@ class Renderer {
 public:
     static void Render();
     static void BoringTriangle();
-    static void MakeUniform(int programId);
 
     static int CompileShader(const std::string& path, GLuint program);
     static int ShaderProgram(int vtx, int frg);

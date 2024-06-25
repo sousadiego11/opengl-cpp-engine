@@ -49,20 +49,14 @@ void Renderer::BoringTriangle() {
     int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
     int shaderProgram = Renderer::ShaderProgram(vertexShader, fragmentShader);
     
-    Renderer::MakeUniform(shaderProgram); //NOT NECESSERALY WILL BE USED
-    
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    // CREATES A UNIFORM WICH IS A GLOBAL VALUE TO BE USED ALONG ALL GL PIPELINES
+    // float time = glfwGetTime();
+    // float green = sin(time) / 2.0f + 0.5f;
+    // int uniformLocation = glGetUniformLocation(shaderProgram, "ourColorUniform");
+    // glUniform4f(uniformLocation, 0.0f, green, 0.0f, 1.0f); // UPDATING UNIFORM REQUIRES USEPROGRAM TO BE USED BEFORE
 
     // DRAW
     glDrawArrays(GL_TRIANGLES, 0, 3);
-}
-
-void Renderer::MakeUniform(int programId) {
-    float time = glfwGetTime();
-    float green = sin(time) / 2.0f + 0.5f;
-    int uniformLocation = glGetUniformLocation(programId, "ourColorUniform");
-    glUniform4f(uniformLocation, 0.0f, green, 0.0f, 1.0f); // UPDATING UNIFORM REQUIRES USEPROGRAM TO BE USED BEFORE
 }
 
 int Renderer::ShaderProgram(int vtx, int frg) {
@@ -80,6 +74,8 @@ int Renderer::ShaderProgram(int vtx, int frg) {
     }
 
     glUseProgram(shaderProgram);
+    glDeleteShader(vtx);
+    glDeleteShader(frg);
     return shaderProgram;
 }
 
@@ -114,7 +110,7 @@ const char* Renderer::ReadFromFile(const std::string& path) {
     file.close();
 
     std::string shaderCodeString = shaderStream.str();
-    char* shaderCode = new char[shaderCodeString.length() + 1]; // +1 for null terminator
+    char* shaderCode = new char[shaderCodeString.length() + 1];
     strcpy(shaderCode, shaderCodeString.c_str());
 
     return shaderCode;
