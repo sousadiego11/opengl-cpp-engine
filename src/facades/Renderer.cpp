@@ -42,7 +42,6 @@ void Renderer::BoringTriangle() {
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    glDeleteProgram(shaderProgram);
 
     // DRAW
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -73,6 +72,7 @@ int Renderer::CompileShader(const std::string& path, GLuint program) {
     glShaderSource(anyShader, 1, &anyShaderSource, NULL);
     glCompileShader(anyShader);
 
+    delete[] anyShaderSource;
     int  success;
     char infoLog[512];
     glGetShaderiv(anyShader, GL_COMPILE_STATUS, &success);
