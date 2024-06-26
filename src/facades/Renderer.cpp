@@ -1,10 +1,11 @@
 #include "Renderer.h"
 #include "Window.h"
 #include "Keyboard.h"
+#include "TextureLoader.h"
 #include <string.h>
 #include <math.h>
 
-void Renderer::Render() {
+void Renderer::Update() {
     while(!glfwWindowShouldClose(Window::window)) {
         Keyboard::ListenQuit();
         
@@ -12,51 +13,59 @@ void Renderer::Render() {
         glClear(GL_COLOR_BUFFER_BIT);
         
         glfwPollEvents();
-        Renderer::BoringTriangle();
+        Renderer::Render();
         glfwSwapBuffers(Window::window);
     }
 
     glfwTerminate();
 }
 
-void Renderer::BoringTriangle() {
+void Renderer::Render() {
     float vertices[] = {
-        // positions         // colors
-        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-        0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
-    };    
+        // positions          // colors           // texture coords
+        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+    };
+    unsigned int indices[] = {  // note that we start from 0!
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };  
 
-    unsigned int VBO, VAO;
+    unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); //BINDS THE MEMORY MANAGEMENT TO A ARRAY BUFFER
-    
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //COPIES THE BUFFER DATA FROM VERTICES TO THE CORRESPONDING ARRAY BUFFER ON VBO
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); //BINDS THE MEMORY MANAGEMENT TO A EL ARRAY BUFFER
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); //COPIES THE BUFFER DATA FROM VERTICES TO THE CORRESPONDING ARRAY BUFFER ON VBO
     
     // stride and indexes are length in bytes, so it has to be multiplied by the value of float
     // POSITION VECTOR: location, size, type, normalized, stride(length of the vtx array), index(where it starts)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // stride and indexes are length in bytes, so it has to be multiplied by the value of float
     // POSITION VECTOR: location, size, type, normalized, stride(length of the vtx array), index(where it starts)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // stride and indexes are length in bytes, so it has to be multiplied by the value of float
+    // POSITION VECTOR: location, size, type, normalized, stride(length of the vtx array), index(where it starts)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6* sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
     int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
     int shaderProgram = Renderer::ShaderProgram(vertexShader, fragmentShader);
-    
-    // CREATES A UNIFORM WICH IS A GLOBAL VALUE TO BE USED ALONG ALL GL PIPELINES
-    float time = glfwGetTime();
-    float sinWave = sin(time);
-    int uniformLocation = glGetUniformLocation(shaderProgram, "sinWave");
-    glUniform1f(uniformLocation, sinWave); // UPDATING UNIFORM REQUIRES USEPROGRAM TO BE USED BEFORE
+    // unsigned int textureId = TextureLoader::Load("src/textures/container.jpg");
 
     // DRAW
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 int Renderer::ShaderProgram(int vtx, int frg) {

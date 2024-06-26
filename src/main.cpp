@@ -16,7 +16,7 @@ int main() {
     Window::MakeContext(); // Calls after GLFW init
     GLAD::Init(); // Called after glfw context is set
     GL::Init(); // GL funcs called after GLAD is inited
-    Renderer::Render();
+    Renderer::Update();
 
     return 0;
 }

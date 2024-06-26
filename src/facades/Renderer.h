@@ -9,8 +9,8 @@
 
 class Renderer {
 public:
+    static void Update();
     static void Render();
-    static void BoringTriangle();
 
     static int CompileShader(const std::string& path, GLuint program);
     static int ShaderProgram(int vtx, int frg);

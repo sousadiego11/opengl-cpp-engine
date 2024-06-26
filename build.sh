@@ -15,6 +15,7 @@ SOURCES="
     $SRC_DIR/facades/GL.cpp 
     $SRC_DIR/facades/Keyboard.cpp
     $SRC_DIR/facades/Renderer.cpp
+    $SRC_DIR/facades/TextureLoader.cpp
 "
 
 # Arquivo de saída
