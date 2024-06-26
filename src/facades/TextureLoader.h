@@ -6,7 +6,7 @@
 
 class TextureLoader {
 public:
-    static unsigned int Load(const char* path);
+    static unsigned int Load(const char* path, int unit);
 };
 
 #endif // TEXTURELOADER_H
