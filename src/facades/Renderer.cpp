@@ -12,7 +12,7 @@ void Renderer::Update() {
     Renderer::BindVertices();
     int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
     int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
-    // unsigned int textureId = TextureLoader::Load("src/textures/container.jpg");
+    unsigned int textureId = TextureLoader::Load("src/textures/container.jpg");
     Renderer::ShaderProgram(vertexShader, fragmentShader);
 
     while(!glfwWindowShouldClose(Window::window)) {
