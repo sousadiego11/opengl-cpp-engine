@@ -5,22 +5,29 @@
 #include <string.h>
 #include <math.h>
 
+unsigned int VAO, VBO, EBO, shaderProgram;
+
 void Renderer::Update() {
+
+    Renderer::BindVertices();
+    int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
+    int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
+    // unsigned int textureId = TextureLoader::Load("src/textures/container.jpg");
+    Renderer::ShaderProgram(vertexShader, fragmentShader);
+
     while(!glfwWindowShouldClose(Window::window)) {
-        Keyboard::ListenQuit();
-        
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
-        glfwPollEvents();
+        Keyboard::ListenQuit();
         Renderer::Render();
+        glfwPollEvents();
         glfwSwapBuffers(Window::window);
     }
 
     glfwTerminate();
 }
 
-void Renderer::Render() {
+void Renderer::BindVertices() {
     float vertices[] = {
         // positions          // colors           // texture coords
         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
@@ -33,14 +40,14 @@ void Renderer::Render() {
         1, 2, 3    // second triangle
     };  
 
-    unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &EBO);
     glBindVertexArray(VAO);
 
+    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); //BINDS THE MEMORY MANAGEMENT TO A EL ARRAY BUFFER
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); //COPIES THE BUFFER DATA FROM VERTICES TO THE CORRESPONDING ARRAY BUFFER ON VBO
     
@@ -58,18 +65,17 @@ void Renderer::Render() {
     // POSITION VECTOR: location, size, type, normalized, stride(length of the vtx array), index(where it starts)
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6* sizeof(float)));
     glEnableVertexAttribArray(2);
+}
 
-    int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
-    int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
-    int shaderProgram = Renderer::ShaderProgram(vertexShader, fragmentShader);
-    // unsigned int textureId = TextureLoader::Load("src/textures/container.jpg");
-
+void Renderer::Render() {
     // DRAW
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-int Renderer::ShaderProgram(int vtx, int frg) {
-    unsigned int shaderProgram = glCreateProgram();
+void Renderer::ShaderProgram(int vtx, int frg) {
+    shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vtx);
     glAttachShader(shaderProgram, frg);
     glLinkProgram(shaderProgram);
@@ -82,10 +88,8 @@ int Renderer::ShaderProgram(int vtx, int frg) {
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
-    glUseProgram(shaderProgram);
     glDeleteShader(vtx);
     glDeleteShader(frg);
-    return shaderProgram;
 }
 
 int Renderer::CompileShader(const std::string& path, GLuint program) {
