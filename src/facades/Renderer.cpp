@@ -13,7 +13,7 @@ unsigned int VAO, VBO, EBO, shaderProgram;
 
 void Renderer::Update() {
 
-    Renderer::BindVertices();
+    Renderer::BindRectangleContainer();
 
     int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
     int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
@@ -38,7 +38,7 @@ void Renderer::Update() {
     glfwTerminate();
 }
 
-void Renderer::BindVertices() {
+void Renderer::BindRectangleContainer() {
     float vertices[] = {
         // positions          // colors           // texture coords
         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
@@ -79,15 +79,21 @@ void Renderer::BindVertices() {
 }
 
 void Renderer::Render() {
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(0.5f, -0.5, 0.0));
-    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));  
+    unsigned int transformUnifLocation = glGetUniformLocation(shaderProgram, "transform");
+    glm::mat4 transform;
+    
+    // DRAW ONE CONTAINER WITH THIS TRANSFORMATION BINDED TO THE SHADERS
+    transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, glm::vec3(0.5f, -0.5, 0.0));
+    transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));  
+    glUniformMatrix4fv(transformUnifLocation, 1, GL_FALSE, glm::value_ptr(transform));
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
+    // NOW DRAW THE SECOND CONTAINER WITH THIS TRANSFORMATION BINDED TO THE SHADERS
+    transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, glm::vec3(-0.5f, 0.5, 0.0));
+    transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f) * sin((float)glfwGetTime()));
+    glUniformMatrix4fv(transformUnifLocation, 1, GL_FALSE, &transform[0][0]);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 

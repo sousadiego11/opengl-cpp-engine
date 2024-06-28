@@ -10,7 +10,7 @@
 class Renderer {
 public:
     static void Update();
-    static void BindVertices();
+    static void BindRectangleContainer();
     static void Render();
 
     static int CompileShader(const std::string& path, GLuint program);
