@@ -14,7 +14,7 @@ public:
     static void Render();
 
     static int CompileShader(const std::string& path, GLuint program);
-    static void ShaderProgram(int vtx, int frg);
+    static unsigned int ShaderProgram(int vtx, int frg);
     
     static const char* ReadFromFile(const std::string& path);
 };

@@ -6,7 +6,9 @@ unsigned int TextureLoader::Load(const char* name, int unit) {
     unsigned int textureId;
     try {
         int width, height, nrChannels;
-        unsigned char* textureData = stbi_load(name, &width, &height, &nrChannels, 0); 
+        unsigned char* textureData = stbi_load(name, &width, &height, &nrChannels, 0);
+
+        stbi_set_flip_vertically_on_load(true);
 
         glGenTextures(1, &textureId);
         glActiveTexture(unit);

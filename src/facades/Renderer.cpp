@@ -5,6 +5,10 @@
 #include <string.h>
 #include <math.h>
 
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
+
 unsigned int VAO, VBO, EBO, shaderProgram;
 
 void Renderer::Update() {
@@ -13,7 +17,7 @@ void Renderer::Update() {
 
     int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
     int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
-    Renderer::ShaderProgram(vertexShader, fragmentShader);
+    shaderProgram = Renderer::ShaderProgram(vertexShader, fragmentShader);
 
     unsigned int textureId1 = TextureLoader::Load("src/textures/container.jpg", GL_TEXTURE0);
     unsigned int textureId2 = TextureLoader::Load("src/textures/awesomeface.png", GL_TEXTURE1);
@@ -75,28 +79,36 @@ void Renderer::BindVertices() {
 }
 
 void Renderer::Render() {
-    // DRAW
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5, 0.0));
+    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));  
+
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::ShaderProgram(int vtx, int frg) {
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vtx);
-    glAttachShader(shaderProgram, frg);
-    glLinkProgram(shaderProgram);
+unsigned int Renderer::ShaderProgram(int vtx, int frg) {
+    unsigned int program = glCreateProgram();
+    glAttachShader(program, vtx);
+    glAttachShader(program, frg);
+    glLinkProgram(program);
 
     int success;
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (!success) {
         char infoLog[512];
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
     glDeleteShader(vtx);
     glDeleteShader(frg);
+
+    return program;
 }
 
 int Renderer::CompileShader(const std::string& path, GLuint program) {
