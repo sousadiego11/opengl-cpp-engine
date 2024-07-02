@@ -10,8 +10,9 @@
 class Renderer {
 public:
     static void Update();
-    static void BindRectangleContainer();
+    static void BindGeometry();
     static void Render();
+    static void PaintBackground();
 
     static int CompileShader(const std::string& path, GLuint program);
     static unsigned int ShaderProgram(int vtx, int frg);

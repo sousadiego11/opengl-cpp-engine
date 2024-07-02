@@ -13,7 +13,7 @@ unsigned int VAO, VBO, EBO, shaderProgram;
 
 void Renderer::Update() {
 
-    Renderer::BindRectangleContainer();
+    Renderer::BindGeometry();
 
     int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
     int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
@@ -27,9 +27,8 @@ void Renderer::Update() {
     glUniform1i(glGetUniformLocation(shaderProgram, "texture2"), 1);
 
     while(!glfwWindowShouldClose(Window::window)) {
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
         Keyboard::ListenQuit();
+        Renderer::PaintBackground();
         Renderer::Render();
         glfwPollEvents();
         glfwSwapBuffers(Window::window);
@@ -38,7 +37,12 @@ void Renderer::Update() {
     glfwTerminate();
 }
 
-void Renderer::BindRectangleContainer() {
+void Renderer::PaintBackground() {
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Renderer::BindGeometry() {
     float vertices[] = {
         // positions          // colors           // texture coords
         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
@@ -79,21 +83,18 @@ void Renderer::BindRectangleContainer() {
 }
 
 void Renderer::Render() {
-    unsigned int transformUnifLocation = glGetUniformLocation(shaderProgram, "transform");
-    glm::mat4 transform;
-    
-    // DRAW ONE CONTAINER WITH THIS TRANSFORMATION BINDED TO THE SHADERS
-    transform = glm::mat4(1.0f);
-    transform = glm::translate(transform, glm::vec3(0.5f, -0.5, 0.0));
-    transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));  
-    glUniformMatrix4fv(transformUnifLocation, 1, GL_FALSE, glm::value_ptr(transform));
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(model));
 
-    // NOW DRAW THE SECOND CONTAINER WITH THIS TRANSFORMATION BINDED TO THE SHADERS
-    transform = glm::mat4(1.0f);
-    transform = glm::translate(transform, glm::vec3(-0.5f, 0.5, 0.0));
-    transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f) * sin((float)glfwGetTime()));
-    glUniformMatrix4fv(transformUnifLocation, 1, GL_FALSE, &transform[0][0]);
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(view));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projection));
+    
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
