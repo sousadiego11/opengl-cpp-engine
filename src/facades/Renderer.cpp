@@ -124,13 +124,14 @@ void Renderer::Render() {
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(view));
     
     glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), (float)Window::width / (float)Window::height, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(50.0f), (float)Window::width / (float)Window::height, 0.1f, 100.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projection));
     
     for (unsigned int i = 0; i < 10; i++) {
+        float randomRotation = (float)glfwGetTime() + glm::radians(20.0f * i);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, cubePositions[i]);
-        model = glm::rotate(model, ((float)glfwGetTime() * (i + 1) + glm::radians(20.0f * i)) / 2, glm::vec3(0.5f, 1.0f, 0.0f)); 
+        model = glm::rotate(model, randomRotation, glm::vec3(0.5f, 1.0f, 0.0f)); 
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
