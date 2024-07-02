@@ -2,11 +2,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
 
-unsigned int TextureLoader::Load(const char* name, int unit) {
+unsigned int TextureLoader::Load(const char* path, const char* uniform, int unit, int shaderProgram, int location) {
     unsigned int textureId;
     try {
         int width, height, nrChannels;
-        unsigned char* textureData = stbi_load(name, &width, &height, &nrChannels, 0);
+        unsigned char* textureData = stbi_load(path, &width, &height, &nrChannels, 0);
 
         stbi_set_flip_vertically_on_load(true);
 
@@ -24,6 +24,9 @@ unsigned int TextureLoader::Load(const char* name, int unit) {
         glGenerateMipmap(GL_TEXTURE_2D);
 
         stbi_image_free(textureData);
+
+        glUseProgram(shaderProgram);
+        glUniform1i(glGetUniformLocation(shaderProgram, uniform), location);
     }
     catch (const std::exception& e) {
         std::cerr << "Failed to load texture: " << e.what() << '\n';

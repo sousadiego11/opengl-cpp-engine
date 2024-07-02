@@ -17,6 +17,7 @@ unsigned int Shader::Program(int vtx, int frg) {
 
     glDeleteShader(vtx);
     glDeleteShader(frg);
+    glUseProgram(program);
 
     return program;
 }

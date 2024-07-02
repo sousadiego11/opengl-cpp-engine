@@ -16,12 +16,8 @@ void Renderer::Update() {
     int fragmentShader = Shader::Compile("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
     shaderProgram = Shader::Program(vertexShader, fragmentShader);
 
-    unsigned int textureId1 = TextureLoader::Load("src/textures/container.jpg", GL_TEXTURE0);
-    unsigned int textureId2 = TextureLoader::Load("src/textures/awesomeface.png", GL_TEXTURE1);
-
-    glUseProgram(shaderProgram);
-    glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
-    glUniform1i(glGetUniformLocation(shaderProgram, "texture2"), 1);
+    unsigned int textureId1 = TextureLoader::Load("src/textures/container.jpg", "texture0", GL_TEXTURE0, shaderProgram, 0);
+    unsigned int textureId2 = TextureLoader::Load("src/textures/awesomeface.png", "texture1", GL_TEXTURE1, shaderProgram, 1);
 
     Renderer::BindGeometry();
     while(!glfwWindowShouldClose(Window::window)) {

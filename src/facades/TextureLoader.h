@@ -6,7 +6,7 @@
 
 class TextureLoader {
 public:
-    static unsigned int Load(const char* path, int unit);
+    static unsigned int Load(const char* path, const char* uniform, int unit, int shaderProgram, int location);
 };
 
 #endif // TEXTURELOADER_H
