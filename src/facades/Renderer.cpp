@@ -2,8 +2,8 @@
 #include "Window.h"
 #include "Keyboard.h"
 #include "TextureLoader.h"
-#include <string.h>
-#include <math.h>
+#include "FileSystem.h"
+#include "Shader.h"
 
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
@@ -12,9 +12,9 @@
 unsigned int VAO, VBO, EBO, shaderProgram;
 
 void Renderer::Update() {
-    int vertexShader = Renderer::CompileShader("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
-    int fragmentShader = Renderer::CompileShader("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
-    shaderProgram = Renderer::ShaderProgram(vertexShader, fragmentShader);
+    int vertexShader = Shader::Compile("src/shaders/basic-vertex.glsl", GL_VERTEX_SHADER);
+    int fragmentShader = Shader::Compile("src/shaders/basic-fragment.glsl", GL_FRAGMENT_SHADER);
+    shaderProgram = Shader::Program(vertexShader, fragmentShader);
 
     unsigned int textureId1 = TextureLoader::Load("src/textures/container.jpg", GL_TEXTURE0);
     unsigned int textureId2 = TextureLoader::Load("src/textures/awesomeface.png", GL_TEXTURE1);
@@ -134,61 +134,4 @@ void Renderer::Render() {
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
-}
-
-unsigned int Renderer::ShaderProgram(int vtx, int frg) {
-    unsigned int program = glCreateProgram();
-    glAttachShader(program, vtx);
-    glAttachShader(program, frg);
-    glLinkProgram(program);
-
-    int success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success) {
-        char infoLog[512];
-        glGetProgramInfoLog(program, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-
-    glDeleteShader(vtx);
-    glDeleteShader(frg);
-
-    return program;
-}
-
-int Renderer::CompileShader(const std::string& path, GLuint program) {
-    const char* anyShaderSource = Renderer::ReadFromFile(path);
-    unsigned int anyShader;
-    anyShader = glCreateShader(program);
-    glShaderSource(anyShader, 1, &anyShaderSource, NULL);
-    glCompileShader(anyShader);
-
-    delete[] anyShaderSource;
-    int  success;
-    char infoLog[512];
-    glGetShaderiv(anyShader, GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(anyShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    return anyShader;
-}
-
-const char* Renderer::ReadFromFile(const std::string& path) {
-    std::ifstream file(path);
-    if (!file.is_open()) {
-        std::cerr << "An error ocurred while trying to access the file: " << path << std::endl;
-        return nullptr;
-    }
-
-    std::stringstream shaderStream;
-    shaderStream << file.rdbuf();
-    file.close();
-
-    std::string shaderCodeString = shaderStream.str();
-    char* shaderCode = new char[shaderCodeString.length() + 1];
-    strcpy(shaderCode, shaderCodeString.c_str());
-
-    return shaderCode;
 }
